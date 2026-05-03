@@ -50,7 +50,7 @@ Each test is executed with **three different Python execution strategies** to co
 |-----------|---------|
 | Python | 3.10 or higher |
 | RAM | 512 MB |
-| OS | Windows 10 / macOS 12 / Ubuntu 20.04 |
+| OS | Windows 11 / macOS 12 / Ubuntu 20.04 |
 | Internet | Required (fetches live API) |
 | Node.js *(optional)* | 18+ (only needed to run Artillery directly) |
 
