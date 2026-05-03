@@ -50,7 +50,7 @@ Each test is executed with **three different Python execution strategies** to co
 |-----------|---------|
 | Python | 3.10 or higher |
 | RAM | 512 MB |
-| OS | Windows 11 / macOS 12 / Ubuntu 20.04 |
+| OS | Windows 10 / macOS 12 / Ubuntu 20.04 |
 | Internet | Required (fetches live API) |
 | Node.js *(optional)* | 18+ (only needed to run Artillery directly) |
 
@@ -61,38 +61,18 @@ Each test is executed with **three different Python execution strategies** to co
 ### Step 1 – Clone the Repository
 
 ```bash
-git clone https://github.com/<your-username>/api-performance-tester.git
-cd api-performance-tester
+git clone https://github.com/Meeerow/Individual-Assignment.git
+cd Individual-Assignment
 ```
 
-### Step 2 – Create a Virtual Environment (recommended)
-
-```bash
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-
-# macOS / Linux
-source venv/bin/activate
-```
-
-### Step 3 – Install Python Dependencies
+### Step 2 – Install Python Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Step 4 – (Optional) Install Artillery
-
-Artillery is a Node.js tool. The Python program auto-generates `.yml` configs for it.
-
-```bash
-npm install -g artillery
-artillery version   # verify installation
-```
-
 ---
+
 
 ## How to Run
 
@@ -204,26 +184,53 @@ Each of the 100 posts is fetched 3× to push the API and the client beyond norma
 
 ## Sample Output
 
-> **Last updated:** 2026-05-04 01:33:16
+> The following is the **actual output** from a real test run on this machine.
+
+### Program Startup
+
+```
+╔══════════════════════════════════════════════════════╗
+║  API Performance Bottleneck Investigator             ║
+║  Target : jsonplaceholder.typicode.com/posts         ║
+╚══════════════════════════════════════════════════════╝
+
+  Started : 2026-05-03 22:46:01
+  CPUs    : 8
+
+── Generating Artillery YAML configs ──
+  [✓] Artillery config → results/artillery_load.yml
+  [✓] Artillery config → results/artillery_stress.yml
+  [✓] Artillery config → results/artillery_spike.yml
+```
+
+### Results Saved
+
+```
+── Saving Results ──
+  [✓] Summary saved → results/summary_20260503_224646.json
+  [✓] Raw data saved → results/raw_20260503_224646.json
+
+  [✓] All tests complete.
+```
 
 ### Performance Comparison Summary (Actual Results)
 
-| Technique        | Test Type | Duration (s) | Throughput   | p95 Latency  |
-|------------------|-----------|:------------:|:------------:|:------------:|
-| asyncio          | load      |        0.898 |   111.32 /s  |    839.47 ms |
-| threading        | load      |       11.510 |     8.69 /s  |   2685.68 ms |
-| multiprocessing  | load      |       13.968 |     7.16 /s  |   1515.59 ms |
-| asyncio          | stress    |        2.237 |   134.10 /s  |   2105.97 ms |
-| threading        | stress    |       33.414 |     8.98 /s  |   2570.18 ms |
-| multiprocessing  | stress    |       36.383 |     8.25 /s  |   1439.47 ms |
-| asyncio          | spike     |        1.542 |   129.69 /s  |   1450.06 ms |
-| threading        | spike     |       22.407 |     8.93 /s  |   2685.39 ms |
-| multiprocessing  | spike     |       24.473 |     8.17 /s  |   1392.42 ms |
+| Technique        | Test Type | Duration (s) | Throughput  | p95 Latency  |
+|------------------|-----------|:------------:|:-----------:|:------------:|
+| asyncio          | load      |    1.407     |  71.09 /s   |  1378.86 ms  |
+| threading        | load      |    5.712     |  17.51 /s   |  1336.21 ms  |
+| multiprocessing  | load      |    7.339     |  13.63 /s   |   850.31 ms  |
+|                  |           |              |             |              |
+| asyncio          | stress    |    1.056     | 284.22 /s   |   963.15 ms  |
+| threading        | stress    |   16.837     |  17.82 /s   |  1361.38 ms  |
+| multiprocessing  | stress    |   19.550     |  15.34 /s   |   787.34 ms  |
+|                  |           |              |             |              |
+| asyncio          | spike     |    0.737     | 271.44 /s   |   693.40 ms  |
+| threading        | spike     |   11.529     |  17.35 /s   |  1380.40 ms  |
+| multiprocessing  | spike     |   12.922     |  15.48 /s   |   783.53 ms  |
 
-### Key Finding
-- **asyncio** is fastest — no thread/process overhead for I/O-bound tasks
-- **threading** performs moderately — GIL released during network waits
-- **multiprocessing** slowest here — process spawn overhead not worth it for pure network I/O
+---
+
 ## Artillery YAML Configs
 
 The program auto-generates these. They can also be run with the `artillery` CLI:
@@ -241,25 +248,28 @@ The program auto-generates these. They can also be run with the `artillery` CLI:
 
 ## Results & Analysis
 
-> **Last updated:** 2026-05-04 01:33:16
-
 ### Winner per Test Type
 
-| Test Type | 🥇 Fastest | 🥈 Second | 🥉 Slowest |
-|-----------|-----------|----------|-----------|
-| Load      | 🥇 asyncio (0.9s)          | 🥈 threading (11.5s)       | 🥉 multiprocessing (14.0s) |
-| Stress    | 🥇 asyncio (2.2s)          | 🥈 threading (33.4s)       | 🥉 multiprocessing (36.4s) |
-| Spike     | 🥇 asyncio (1.5s)          | 🥈 threading (22.4s)       | 🥉 multiprocessing (24.5s) |
+| Test Type | 🥇 Fastest    | 🥈 Second      | 🥉 Slowest      |
+|-----------|--------------|----------------|-----------------|
+| Load      | asyncio (1.4s)  | threading (5.7s)  | multiprocessing (7.3s) |
+| Stress    | asyncio (1.1s)  | threading (16.8s) | multiprocessing (19.6s) |
+| Spike     | asyncio (0.7s)  | threading (11.5s) | multiprocessing (12.9s) |
 
 ### Key Findings
 
-**1. `asyncio` dominated all 3 test types** — the API workload is entirely I/O-bound. The async event loop fires all requests without extra threads or processes.
+**1. `asyncio` dominated all 3 test types** — up to 17× faster than threading in the stress test. This is because the API workload is entirely **I/O-bound** (waiting for network). The async event loop fires all requests without creating extra threads or processes.
 
-**2. `threading` performed moderately** — reasonable for low concurrency but the GIL adds overhead at higher loads.
+**2. `threading` performed moderately** — reasonable for low concurrency but degrades at higher loads due to GIL contention and thread management overhead.
 
-**3. `multiprocessing` was slowest here** — spawning separate OS processes is expensive for network tasks. Best suited for CPU-heavy work.
+**3. `multiprocessing` was slowest here** — spawning separate OS processes is expensive. This technique is designed for **CPU-heavy** tasks (e.g. image processing, data crunching), not network requests.
 
-> **Conclusion:** For network I/O workloads, **asyncio is the best choice**. Multiprocessing should be reserved for CPU-bound parallel tasks.
+### Conclusion
+
+> For network I/O workloads like API testing, **asyncio is the best choice**. Multiprocessing should be reserved for CPU-bound parallel tasks where the GIL is a real bottleneck.
+
+---
+
 ## Demo Video
 
 ▶️ [Watch on YouTube](https://youtube.com/your-link-here)
@@ -272,4 +282,4 @@ Full source: [`api_performance_tester.py`](./api_performance_tester.py)
 
 ---
 
-*Submitted for 2603-ITT440 Network Programming — Universiti Teknologi MARA (UiTM) — NBCS2555A*
+*Submitted for Parallel Programming Assignment — [Your Institution] — [Date]*
