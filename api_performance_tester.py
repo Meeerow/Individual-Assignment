@@ -486,10 +486,54 @@ def update_readme(summaries: List[TestSummary]):
         "- **multiprocessing** slowest here — process spawn overhead not worth it for pure network I/O\n"
     )
 
+    # Build Results & Analysis section
+    # Find winner per test type
+    winners = {}
+    for test_type in ("load", "stress", "spike"):
+        group = [s for s in summaries if s.test_type == test_type]
+        group.sort(key=lambda x: x.total_duration_s)
+        winners[test_type] = group  # sorted fastest to slowest
+
+    def medal(group, i):
+        medals = ["🥇", "🥈", "🥉"]
+        s = group[i]
+        return f"{medals[i]} {s.technique} ({s.total_duration_s:.1f}s)"
+
+    analysis_section = (
+        "## Results & Analysis\n\n"
+        f"> **Last updated:** {ts}\n\n"
+        "### Winner per Test Type\n\n"
+        "| Test Type | 🥇 Fastest | 🥈 Second | 🥉 Slowest |\n"
+        "|-----------|-----------|----------|-----------|\n"
+    )
+    for test_type in ("load", "stress", "spike"):
+        g = winners[test_type]
+        analysis_section += (
+            f"| {test_type.capitalize():<9} "
+            f"| {medal(g,0):<25} "
+            f"| {medal(g,1):<25} "
+            f"| {medal(g,2):<25} |\n"
+        )
+
+    analysis_section += (
+        "\n### Key Findings\n\n"
+        "**1. `asyncio` dominated all 3 test types** — "
+        "the API workload is entirely I/O-bound. "
+        "The async event loop fires all requests without extra threads or processes.\n\n"
+        "**2. `threading` performed moderately** — "
+        "reasonable for low concurrency but the GIL adds overhead at higher loads.\n\n"
+        "**3. `multiprocessing` was slowest here** — "
+        "spawning separate OS processes is expensive for network tasks. "
+        "Best suited for CPU-heavy work.\n\n"
+        "> **Conclusion:** For network I/O workloads, "
+        "**asyncio is the best choice**. "
+        "Multiprocessing should be reserved for CPU-bound parallel tasks.\n"
+    )
+
     with open(readme_path, "r", encoding="utf-8") as f:
         content = f.read()
 
-    # Replace from ## Sample Output up to the next ## heading
+    # Replace Sample Output section
     updated = re.sub(
         r"## Sample Output.*?(?=\n## )",
         new_section.rstrip(),
@@ -497,10 +541,19 @@ def update_readme(summaries: List[TestSummary]):
         flags=re.DOTALL
     )
 
+    # Replace Results & Analysis section (up to next ## or end of file)
+    updated = re.sub(
+        r"## Results & Analysis.*?(?=\n## |\Z)",
+        analysis_section.rstrip(),
+        updated,
+        flags=re.DOTALL
+    )
+
     with open(readme_path, "w", encoding="utf-8") as f:
         f.write(updated)
 
-    print("  [✓] README.md updated with latest results!")
+    print("  [✓] README.md — Sample Output updated!")
+    print("  [✓] README.md — Results & Analysis updated!")
 
 
 # ═══════════════════════════════════════════════════════════

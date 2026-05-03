@@ -204,21 +204,21 @@ Each of the 100 posts is fetched 3× to push the API and the client beyond norma
 
 ## Sample Output
 
-> **Last updated:** 2026-05-04 01:00:41
+> **Last updated:** 2026-05-04 01:27:12
 
 ### Performance Comparison Summary (Actual Results)
 
 | Technique        | Test Type | Duration (s) | Throughput   | p95 Latency  |
 |------------------|-----------|:------------:|:------------:|:------------:|
-| asyncio          | load      |        0.845 |   118.37 /s  |    799.24 ms |
-| threading        | load      |       10.653 |     9.39 /s  |   2366.77 ms |
-| multiprocessing  | load      |       12.839 |     7.79 /s  |   1367.39 ms |
-| asyncio          | stress    |        2.210 |   135.72 /s  |   2080.37 ms |
-| threading        | stress    |       31.721 |     9.46 /s  |   2445.61 ms |
-| multiprocessing  | stress    |       33.911 |     8.85 /s  |   1337.96 ms |
-| asyncio          | spike     |        1.523 |   131.30 /s  |   1425.58 ms |
-| threading        | spike     |       21.229 |     9.42 /s  |   2483.37 ms |
-| multiprocessing  | spike     |       23.163 |     8.63 /s  |   1353.89 ms |
+| asyncio          | load      |        0.795 |   125.71 /s  |    750.69 ms |
+| threading        | load      |       10.547 |     9.48 /s  |   2390.80 ms |
+| multiprocessing  | load      |       12.507 |     8.00 /s  |   1302.13 ms |
+| asyncio          | stress    |        2.300 |   130.45 /s  |   2173.14 ms |
+| threading        | stress    |       30.929 |     9.70 /s  |   2453.79 ms |
+| multiprocessing  | stress    |       32.881 |     9.12 /s  |   1291.24 ms |
+| asyncio          | spike     |        1.472 |   135.87 /s  |   1385.63 ms |
+| threading        | spike     |       20.731 |     9.65 /s  |   2496.09 ms |
+| multiprocessing  | spike     |       22.607 |     8.85 /s  |   1283.62 ms |
 
 ### Key Finding
 - **asyncio** is fastest — no thread/process overhead for I/O-bound tasks
@@ -241,28 +241,25 @@ The program auto-generates these. They can also be run with the `artillery` CLI:
 
 ## Results & Analysis
 
+> **Last updated:** 2026-05-04 01:27:12
+
 ### Winner per Test Type
 
-| Test Type | 🥇 Fastest    | 🥈 Second      | 🥉 Slowest      |
-|-----------|--------------|----------------|-----------------|
-| Load      | asyncio (1.4s)  | threading (5.7s)  | multiprocessing (7.3s) |
-| Stress    | asyncio (1.1s)  | threading (16.8s) | multiprocessing (19.6s) |
-| Spike     | asyncio (0.7s)  | threading (11.5s) | multiprocessing (12.9s) |
+| Test Type | 🥇 Fastest | 🥈 Second | 🥉 Slowest |
+|-----------|-----------|----------|-----------|
+| Load      | 🥇 asyncio (0.8s)          | 🥈 threading (10.5s)       | 🥉 multiprocessing (12.5s) |
+| Stress    | 🥇 asyncio (2.3s)          | 🥈 threading (30.9s)       | 🥉 multiprocessing (32.9s) |
+| Spike     | 🥇 asyncio (1.5s)          | 🥈 threading (20.7s)       | 🥉 multiprocessing (22.6s) |
 
 ### Key Findings
 
-**1. `asyncio` dominated all 3 test types** — up to 17× faster than threading in the stress test. This is because the API workload is entirely **I/O-bound** (waiting for network). The async event loop fires all requests without creating extra threads or processes.
+**1. `asyncio` dominated all 3 test types** — the API workload is entirely I/O-bound. The async event loop fires all requests without extra threads or processes.
 
-**2. `threading` performed moderately** — reasonable for low concurrency but degrades at higher loads due to GIL contention and thread management overhead.
+**2. `threading` performed moderately** — reasonable for low concurrency but the GIL adds overhead at higher loads.
 
-**3. `multiprocessing` was slowest here** — spawning separate OS processes is expensive. This technique is designed for **CPU-heavy** tasks (e.g. image processing, data crunching), not network requests.
+**3. `multiprocessing` was slowest here** — spawning separate OS processes is expensive for network tasks. Best suited for CPU-heavy work.
 
-### Conclusion
-
-> For network I/O workloads like API testing, **asyncio is the best choice**. Multiprocessing should be reserved for CPU-bound parallel tasks where the GIL is a real bottleneck.
-
----
-
+> **Conclusion:** For network I/O workloads, **asyncio is the best choice**. Multiprocessing should be reserved for CPU-bound parallel tasks.
 ## Demo Video
 
 ▶️ [Watch on YouTube](https://youtube.com/your-link-here)
