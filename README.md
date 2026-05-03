@@ -204,21 +204,21 @@ Each of the 100 posts is fetched 3× to push the API and the client beyond norma
 
 ## Sample Output
 
-> **Last updated:** 2026-05-04 01:27:12
+> **Last updated:** 2026-05-04 01:33:16
 
 ### Performance Comparison Summary (Actual Results)
 
 | Technique        | Test Type | Duration (s) | Throughput   | p95 Latency  |
 |------------------|-----------|:------------:|:------------:|:------------:|
-| asyncio          | load      |        0.795 |   125.71 /s  |    750.69 ms |
-| threading        | load      |       10.547 |     9.48 /s  |   2390.80 ms |
-| multiprocessing  | load      |       12.507 |     8.00 /s  |   1302.13 ms |
-| asyncio          | stress    |        2.300 |   130.45 /s  |   2173.14 ms |
-| threading        | stress    |       30.929 |     9.70 /s  |   2453.79 ms |
-| multiprocessing  | stress    |       32.881 |     9.12 /s  |   1291.24 ms |
-| asyncio          | spike     |        1.472 |   135.87 /s  |   1385.63 ms |
-| threading        | spike     |       20.731 |     9.65 /s  |   2496.09 ms |
-| multiprocessing  | spike     |       22.607 |     8.85 /s  |   1283.62 ms |
+| asyncio          | load      |        0.898 |   111.32 /s  |    839.47 ms |
+| threading        | load      |       11.510 |     8.69 /s  |   2685.68 ms |
+| multiprocessing  | load      |       13.968 |     7.16 /s  |   1515.59 ms |
+| asyncio          | stress    |        2.237 |   134.10 /s  |   2105.97 ms |
+| threading        | stress    |       33.414 |     8.98 /s  |   2570.18 ms |
+| multiprocessing  | stress    |       36.383 |     8.25 /s  |   1439.47 ms |
+| asyncio          | spike     |        1.542 |   129.69 /s  |   1450.06 ms |
+| threading        | spike     |       22.407 |     8.93 /s  |   2685.39 ms |
+| multiprocessing  | spike     |       24.473 |     8.17 /s  |   1392.42 ms |
 
 ### Key Finding
 - **asyncio** is fastest — no thread/process overhead for I/O-bound tasks
@@ -241,15 +241,15 @@ The program auto-generates these. They can also be run with the `artillery` CLI:
 
 ## Results & Analysis
 
-> **Last updated:** 2026-05-04 01:27:12
+> **Last updated:** 2026-05-04 01:33:16
 
 ### Winner per Test Type
 
 | Test Type | 🥇 Fastest | 🥈 Second | 🥉 Slowest |
 |-----------|-----------|----------|-----------|
-| Load      | 🥇 asyncio (0.8s)          | 🥈 threading (10.5s)       | 🥉 multiprocessing (12.5s) |
-| Stress    | 🥇 asyncio (2.3s)          | 🥈 threading (30.9s)       | 🥉 multiprocessing (32.9s) |
-| Spike     | 🥇 asyncio (1.5s)          | 🥈 threading (20.7s)       | 🥉 multiprocessing (22.6s) |
+| Load      | 🥇 asyncio (0.9s)          | 🥈 threading (11.5s)       | 🥉 multiprocessing (14.0s) |
+| Stress    | 🥇 asyncio (2.2s)          | 🥈 threading (33.4s)       | 🥉 multiprocessing (36.4s) |
+| Spike     | 🥇 asyncio (1.5s)          | 🥈 threading (22.4s)       | 🥉 multiprocessing (24.5s) |
 
 ### Key Findings
 
