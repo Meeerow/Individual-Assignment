@@ -439,7 +439,7 @@ def main():
     print("║ Technique            ║ Test Type     ║ Duration (s) ║ Throughput  ║    p95 (ms)    ║")
     print("╠══════════════════════╬═══════════════╬══════════════╬═════════════╬════════════════╣")
     for s in all_summaries:
-        print(f"║ {s.technique:<20} ║ {s.test_type:<13} ║{s.total_duration_s:>13.3f} ║{s.throughput_rps:>11.2f}/s ║{s.p95_latency_ms:>12.2f} ms   ║")
+        print(f"║ {s.technique:<20} ║ {s.test_type:<13} ║{s.total_duration_s:>13.3f} ║{s.throughput_rps:>10.2f}/s ║{s.p95_latency_ms:>10.2f} ms ║")
     print("╚══════════════════════╩═══════════════╩══════════════╩═════════════╩════════════════╝")
     print("\n  [✓] All tests complete.")
 
