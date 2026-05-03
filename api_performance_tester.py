@@ -435,16 +435,16 @@ def main():
     save_results(all_summaries, [])
 
     # Final comparison table
-    print("\n╔══════════════════════════════════════════════════════════════════════════╗")
-    print("║  PERFORMANCE COMPARISON SUMMARY                                         ║")
-    print("╠══════════════╦═══════════════╦══════════════╦═════════════╦════════════╣")
-    print("║ Technique    ║ Test Type     ║ Duration (s) ║ Throughput  ║ p95 (ms)   ║")
-    print("╠══════════════╬═══════════════╬══════════════╬═════════════╬════════════╣")
+    print("\n╔════════════════════════════════════════════════════════════════════════════════════╗")
+    print("║  PERFORMANCE COMPARISON SUMMARY                                                   ║")
+    print("╠══════════════════════╦═══════════════╦══════════════╦═════════════╦════════════╣")
+    print("║ Technique            ║ Test Type     ║ Duration (s) ║ Throughput  ║ p95 (ms)   ║")
+    print("╠══════════════════════╬═══════════════╬══════════════╬═════════════╬════════════╣")
     for s in all_summaries:
-        print(f"║ {s.technique:<12} ║ {s.test_type:<13} ║ "
+        print(f"║ {s.technique:<20} ║ {s.test_type:<13} ║ "
               f"{s.total_duration_s:>12.3f} ║ {s.throughput_rps:>9.2f}/s ║ "
               f"{s.p95_latency_ms:>8.2f} ms ║")
-    print("╚══════════════╩═══════════════╩══════════════╩═════════════╩════════════╝")
+    print("╚══════════════════════╩═══════════════╩══════════════╩═════════════╩════════════╝")
     print("\n  [✓] All tests complete.")
 
 
