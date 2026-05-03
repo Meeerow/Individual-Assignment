@@ -282,4 +282,4 @@ Full source: [`api_performance_tester.py`](./api_performance_tester.py)
 
 ---
 
-*Submitted for Parallel Programming Assignment — [Your Institution] — [Date]*
+*Submitted for 2603-ITT440 Network Programming — Universiti Teknologi MARA (UiTM) — 2026*
