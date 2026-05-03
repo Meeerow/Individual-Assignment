@@ -445,11 +445,17 @@ def main():
     return all_summaries
 
 
+
+# ═══════════════════════════════════════════════════════════
+# SECTION 8 – AUTO README UPDATE
+# ═══════════════════════════════════════════════════════════
+
 def update_readme(summaries: List[TestSummary]):
     """
-    Auto-update the Sample Output section in README.md
-    with the latest real test results after every run.
+    Overwrites the Sample Output section in README.md with
+    the latest real results after every run.
     """
+    import re
     readme_path = "README.md"
     if not os.path.exists(readme_path):
         print("  [!] README.md not found — skipping update.")
@@ -457,77 +463,77 @@ def update_readme(summaries: List[TestSummary]):
 
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Build the new results table in Markdown
-    table  = f"""## Sample Output
-
-> **Last updated:** {ts}
-
-### Performance Comparison Summary (Actual Results)
-
-| Technique        | Test Type | Duration (s) | Throughput   | p95 Latency   |
-|------------------|-----------|:------------:|:------------:|:-------------:|
-"""
+    # Build markdown table rows
+    rows = ""
     for s in summaries:
-        table += (f"| {s.technique:<16} | {s.test_type:<9} | "
-                  f"{s.total_duration_s:>12.3f} | {s.throughput_rps:>8.2f} /s  | "
-                  f"{s.p95_latency_ms:>9.2f} ms   |
-")
+        rows += (
+            f"| {s.technique:<16} | {s.test_type:<9} |"
+            f" {s.total_duration_s:>12.3f} |"
+            f" {s.throughput_rps:>8.2f} /s  |"
+            f" {s.p95_latency_ms:>9.2f} ms |\n"
+        )
 
-    table += """
-### Key Finding
-- **asyncio** is fastest for all I/O-bound tests — no thread/process overhead
-- **threading** performs moderately — GIL released during network waits
-- **multiprocessing** slowest here — process spawn overhead outweighs benefit for pure network I/O
-"""
+    new_section = (
+        "## Sample Output\n\n"
+        f"> **Last updated:** {ts}\n\n"
+        "### Performance Comparison Summary (Actual Results)\n\n"
+        "| Technique        | Test Type | Duration (s) | Throughput   | p95 Latency  |\n"
+        "|------------------|-----------|:------------:|:------------:|:------------:|\n"
+        + rows +
+        "\n### Key Finding\n"
+        "- **asyncio** is fastest — no thread/process overhead for I/O-bound tasks\n"
+        "- **threading** performs moderately — GIL released during network waits\n"
+        "- **multiprocessing** slowest here — process spawn overhead not worth it for pure network I/O\n"
+    )
 
-    # Replace everything between ## Sample Output and the next ## heading
     with open(readme_path, "r", encoding="utf-8") as f:
         content = f.read()
 
-    import re
-    # Replace from ## Sample Output up to the next ## section
-    new_content = re.sub(
-        r"## Sample Output.*?(?=
-## )",
-        table.rstrip(),
+    # Replace from ## Sample Output up to the next ## heading
+    updated = re.sub(
+        r"## Sample Output.*?(?=\n## )",
+        new_section.rstrip(),
         content,
         flags=re.DOTALL
     )
 
     with open(readme_path, "w", encoding="utf-8") as f:
-        f.write(new_content)
+        f.write(updated)
 
     print("  [✓] README.md updated with latest results!")
 
 
+# ═══════════════════════════════════════════════════════════
+# SECTION 9 – AUTO GIT PUSH
+# ═══════════════════════════════════════════════════════════
+
 def auto_git_push():
     """
-    Automatically stage, commit, and push all changes to GitHub
-    after the tests complete. Requires git to be configured and
-    the repository to have a valid remote origin.
+    Stage, commit, and push all changes to GitHub automatically
+    after every test run.
     """
-    print("
-── Auto Git Push ──")
+    print("\n── Auto Git Push ──")
     try:
         subprocess.run(["git", "add", "."], check=True)
         print("  [✓] git add .")
 
-        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ts  = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         msg = f"Auto-update: test results {ts}"
         subprocess.run(["git", "commit", "-m", msg], check=True)
         print(f"  [✓] git commit — {msg}")
 
         subprocess.run(["git", "push"], check=True)
-        print("  [✓] git push — Results uploaded to GitHub!")
+        print("  [✓] git push — GitHub updated!")
 
     except subprocess.CalledProcessError as e:
         print(f"  [!] Git command failed: {e}")
-        print("      Make sure git is configured and you have internet access.")
+        print("      Check your internet connection and git credentials.")
 
 
 if __name__ == "__main__":
     # Guard required for multiprocessing on Windows / macOS
     multiprocessing.freeze_support()
     summaries = main()
+    print("\n── Updating README ──")
     update_readme(summaries)
     auto_git_push()
