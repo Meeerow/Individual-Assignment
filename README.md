@@ -260,7 +260,7 @@ The program auto-generates these. They can also be run with the `artillery` CLI:
 > **Conclusion:** For network I/O workloads, **asyncio is the best choice**. Multiprocessing should be reserved for CPU-bound parallel tasks.
 ## Demo Video
 
-▶️ [Watch on YouTube](https://youtube.com/your-link-here)
+▶️ [Watch on YouTube](https://youtu.be/tAH2GeQnSA8)
 
 ---
 
