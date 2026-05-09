@@ -8,17 +8,35 @@
 ---
 
 ## Table of Contents
-1. [Problem Statement](#problem-statement)  
-2. [System Requirements](#system-requirements)  
-3. [Installation](#installation)  
-4. [How to Run](#how-to-run)  
-5. [Project Structure](#project-structure)  
-6. [Techniques Explained](#techniques-explained)  
-7. [Test Types](#test-types)  
-8. [Sample Output](#sample-output)  
-9. [Artillery YAML Configs](#artillery-yaml-configs)  
-10. [Results & Analysis](#results--analysis)  
-11. [Demo Video](#demo-video)
+1. [How It Works](#how-it-works)
+2. [Problem Statement](#problem-statement)  
+3. [System Requirements](#system-requirements)  
+4. [Installation](#installation)  
+5. [How to Run](#how-to-run)  
+6. [Project Structure](#project-structure)  
+7. [Techniques Explained](#techniques-explained)  
+8. [Test Types](#test-types)  
+9. [Sample Output](#sample-output)  
+10. [Artillery YAML Configs](#artillery-yaml-configs)  
+11. [Results & Analysis](#results--analysis)  
+12. [Demo Video](#demo-video)
+
+---
+
+## How It Works
+
+```
+Meeerow's PC  ──────────────────────────►  jsonplaceholder.typicode.com
+               sends HTTP GET requests          (public API server)
+                                                       │
+Meeerow's PC  ◄──────────────────────────  returns JSON response
+               receives & measures speed
+```
+
+- **Meeerow's PC** is the **client** — it sends the requests
+- `jsonplaceholder.typicode.com` is the **server** — it responds with JSON data
+- The **internet** is the bridge between them
+- That's why latency varies every run — it depends on real network conditions at that moment
 
 ---
 
